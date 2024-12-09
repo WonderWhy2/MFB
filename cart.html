@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Cart - MFB</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="topnav">
+    <a href="home.html">Home</a>
+    <a href="sell_book.html">Sell a book</a>
+    <a href="recommend_book.html">Recommend a book</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+
+    <div class="topnavLR">
+      <a href="cart.html">Cart</a>
+      <a href="register.html">Register</a>
+      <a href="login.html">Log in</a>
+    </div>
+  </div>
+ 
+  <head>
+    <p class="head">Cart</p>
+  </head>
+  <main>
+    <section id="cart-container" class="cart-container"></section>
+    <section id="cart-summary" class="cart-summary">
+    <h2>Order Summary</h2>
+     <div>
+        <p>Total: SAR<span id="total">0</span></p>
+     </div>
+
+      <h2>Choose Shipping Option</h2>
+<div class="shipping-methods">
+  <input type="radio" name="shipping" value="standard"> Samsa Standard Shipping (SAR15)
+  <input type="radio" name="shipping" value="fast">  Aramex Fast Shipping (SAR20)
+   </div>
+<br>
+   <div id="shipping-info" class="shipping-info">
+  <h3>Shipping address</h3>
+  <label for="address">Your Address City: District: Street:</label>
+  <input type="text" id="address" class="address" placeholder="City: District: Street:">
+   </div>
+
+
+      <h2>Choose Payment Method</h2>
+      <div class="payment-methods">
+        <label>
+        <input type="radio" name="payment" value="card" onclick="toggleCardInfo(true)"> Card Payment
+        </label>
+        <label>
+        <input type="radio" name="payment" value="delivery" onclick="toggleCardInfo(false)"> Pay on Delivery
+      </label>
+      </div>
+      <br>
+
+      <div id="card-info" class="card-info hidden">
+        <h3>Card Information</h3>
+        <label for="card-number">Card Number:</label>
+        <input type="text" id="card-number" placeholder="CARD NUMBER">
+        <label for="card-name">Name on Card:</label>
+        <input type="text" id="card-name" placeholder="Full Name">
+        <div class="card-infoTC">
+          <label for="expiry-date">Expiry Date:</label>
+          <input type="text" id="expiry-date" placeholder="MM/YY">
+          <label for="cvv">CVV:</label>
+          <input type="text" id="cvv" placeholder="123">
+        </div>
+      </div>
+
+      <button class="checkout-btn" onclick="checkout()">Place Order</button>
+      <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
+    </section>
+  </main>
+  <footer> My Fit Book Project</footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {updateCart(); });
+    
+    function updateCart() {
+      let booksInCart = localStorage.getItem('booksInCart');
+      if (booksInCart) {
+        booksInCart = JSON.parse(booksInCart); 
+      } else {
+        booksInCart = []; 
+      } 
+
+    
+      let cartHTML = ''; 
+    
+      
+      booksInCart.forEach((book) => {
+        cartHTML += `
+          <div class="cart-item">
+            <div class="cart-item-img">
+              <img src="${book.image}" alt="${book.title}">
+            </div>
+            <div class="cart-item-details">
+              <h3>${book.title}</h3>
+              <p>Price: SAR${book.price}</p>
+              <p>Quantity: 
+                <button onclick="updateQuantity(${book.bookId}, ${book.quantity - 1})">-</button>
+                ${book.quantity}
+                <button onclick="updateQuantity(${book.bookId}, ${book.quantity + 1})">+</button>
+              </p>
+              <button class="remove-btn" onclick="removeFromCart(${book.bookId})">Remove</button>
+            </div>
+          </div>
+        `;
+      });
+    
+      
+      document.getElementById('cart-container').innerHTML = cartHTML;
+    
+    
+      let booksPrice = 0; 
+      booksInCart.forEach((book) => {
+        booksPrice += book.price * book.quantity; 
+      });
+      
+      
+      let shippingMethod = document.querySelector('input[name="shipping"]:checked');
+      let shippingCost = 0;
+      if (!shippingMethod) {
+        alert('Choose a shipping method')
+         
+        } else if (shippingMethod.value === "standard") {
+          shippingCost = 15;
+        
+      } else if (shippingMethod.value === "fast") {
+        shippingCost = 20;
+      }
+      
+      
+     
+      let total = booksPrice + shippingCost;
+      
+     
+      document.getElementById('total').textContent = total.toFixed(2); 
+      
+      const shippingMethods = document.querySelectorAll('input[name="shipping"]');
+  shippingMethods.forEach(method => {
+    method.addEventListener('change', updateCart);
+  });
+
+    
+    }
+   
+    function updateQuantity(bookId, newQuantity) {
+      let booksInCart = localStorage.getItem('booksInCart');
+      if (booksInCart) {
+        booksInCart = JSON.parse(booksInCart);
+      } else {
+        booksInCart = [];
+      }
+    
+      const book = booksInCart.find((book) => book.bookId === bookId);
+      if (book) {
+        if (newQuantity <= 0) {
+          removeFromCart(bookId); 
+        } else {
+          book.quantity = newQuantity; 
+          localStorage.setItem('booksInCart', JSON.stringify(booksInCart)); 
+          updateCart(); 
+        }
+      }
+    }
+    
+   
+    function removeFromCart(bookId) {
+      let booksInCart = localStorage.getItem('booksInCart');
+      if (booksInCart) {
+        booksInCart = JSON.parse(booksInCart);
+      } else {
+        booksInCart = [];
+      }
+    
+      booksInCart = booksInCart.filter((book) => book.bookId !== bookId);
+      localStorage.setItem('booksInCart', JSON.stringify(booksInCart)); 
+      updateCart(); 
+    }
+    
+   
+    function clearCart() {
+      localStorage.removeItem('booksInCart'); 
+      updateCart(); 
+    }
+    
+   
+    function toggleCardInfo(show) {
+      const cardInfo = document.getElementById('card-info');
+      if (show) {
+        cardInfo.classList.remove('hidden');
+      } else {
+        cardInfo.classList.add('hidden');
+      }
+    }
+    
+  
+    function checkout() {
+      let booksInCart = localStorage.getItem('booksInCart');
+      if (booksInCart) {
+        booksInCart = JSON.parse(booksInCart);
+      } else {
+        booksInCart = [];
+       }
+    
+      const address = document.getElementById('address').value;
+    
+      
+      if (booksInCart.length === 0) {
+        alert('The cart is empty');
+        return;
+        }
+    
+      const shippingMethod = document.querySelector('input[name="shipping"]:checked');
+      if (!shippingMethod) {
+        alert('Please select a shipping method');
+        return;
+      }
+    
+      if (!address) {
+        alert('Please write a shipping address');
+        return;
+      }
+      
+      
+      fetch('/place-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address, booksInCart }),
+      }).then((response) => {
+        if (response.ok) {
+          localStorage.removeItem('booksInCart'); 
+          alert('Order placed successfully');
+          window.location.href = '/home.html';
+        } else {
+          alert('Failed to place order please try again');
+        }
+       });
+     }
+    
+    
+    
+    
+  </script>
+</body>
+
+</html>
+   

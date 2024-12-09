@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MFB - Home</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topnav">
+    <a  href="home.html">Home</a>
+    <a href="sell_book.html">Sell a book</a>
+    <a href="recommend_book.html">Recommend a book</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+
+    <div class="topnavLR">
+      <a href="cart.html">Cart</a>
+    <a href="register.html">Register</a>
+    <a href="login.html">Log in</a>
+    <a href="login.html" onclick="logout()">Logout</a>
+    </div>
+  </div>
+
+  <script>  function logout() {
+    alert('Logout successful!'); 
+    fetch('/logout', { method: 'GET' }); } 
+  </script>
+
+  <header>
+    MFB
+  </header>
+
+  <div class="container">
+    <nav>
+      <ul>
+        <li><a href="home.html">Home</a></li>
+        <li><a href="browse_books.html">Browse Books</a></li>
+        <li><a href="best_sellers.html">Best Sellers</a></li>
+        <li><a href="offers.html">Offers</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="content">
+    <main>
+      <h2>Best Sellers</h2>
+      <div id="books-list" class="books-container"></div>
+    </main>
+  </div>
+
+  <footer>My Fit Book Project</footer>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', fetchBestSellers);
+
+    async function fetchBestSellers() {
+      try {
+        const response = await fetch('/best-sellers'); // fetch top 7 best sellers from the backend
+        const books = await response.json();
+        displayBooks(books);
+      } catch (error) {
+        console.error('Error fetching best sellers:', error);
+        document.getElementById('books-list').innerHTML = '<p>Failed to load best sellers.</p>';
+      }
+    }
+
+    function displayBooks(books) {
+      let booksHTML = ''; 
+
+      books.forEach((book) => {
+        booksHTML += `
+          <div class="book-item">
+            <img src="${book.image}" alt="${book.title}">
+            <h3>${book.title}</h3>
+            <p>Author: ${book.author}</p>
+            <p>Price: SAR${book.price}</p>
+            <p>University: ${book.university}</p>
+            <p>College: ${book.college}</p>
+            <p>Section: ${book.section}</p>
+            <p>Condition: ${book.book_condition}</p>
+            <button onclick="addToCart(${book.book_id}, '${book.title}', ${book.price}, '${book.image}')">Add to Cart</button>
+          </div>
+        `;
+      });
+
+      document.getElementById('books-list').innerHTML = booksHTML;
+    }
+
+    function addToCart(bookId, title, price, image) {
+      let booksInCart = localStorage.getItem('booksInCart');
+
+      if (booksInCart) {
+        booksInCart = JSON.parse(booksInCart);
+      } else {
+        booksInCart = [];
+      }
+
+      const bookExist = booksInCart.find(book => book.bookId === bookId);
+
+      if (bookExist) {
+        bookExist.quantity += 1;
+      } else {
+        booksInCart.push({
+          bookId: bookId,
+          title: title,
+          price: price,
+          image: image,
+          quantity: 1,
+        });
+      }
+
+      localStorage.setItem('booksInCart', JSON.stringify(booksInCart));
+      alert('Book added to cart');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+  <title>Sell a Book</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<div class="topnav">
+  <a  href="home.html">Home</a>
+  <a href="sell_book.html">Sell a book</a>
+  <a href="recommend_book.html">Recommend a book</a>
+  <a href="contact.html">Contact</a>
+  <a href="about.html">About</a>
+  
+  <div class="topnavLR">
+    <a href="cart.html">Cart</a>
+    <a href="register.html">Register</a>
+    <a href="login.html">Log in</a>
+  </div>
+</div>
+<body>
+  <head>
+    <p class="head">Sell a Book</p>
+  </head>
+
+  <main>
+    <h2>Sell Your Book</h2>
+    <form action="mailto:mfb@mfb.com" method="POST" name="SellBookForm"
+>   <input type="text" name="name" placeholder="Full name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="university" placeholder="University" required>
+    <input type="text" name="college" placeholder="College" required>
+    <input type="text" name="section" placeholder="Section" required>
+    <input type="text" name="title" placeholder="Book title" required>
+    <input type="text" name="author" placeholder="Book author" required>
+    <input type="text" name="edition" placeholder="Book edition" required>
+    <input type="text" name="condition" placeholder="Book condtion if it has any defects" required>
+    <label for="images">Upload Book Images (4 images)</label>
+    <input type="file" name="images" accept="image/*" multiple required>
+    <button type="submit">Submit</button>
+</form>
+  </main>
+
+ 
+    <footer> My Fit Book Project</footer>
+ 
+</body>
+</html>
