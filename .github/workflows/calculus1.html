@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Details - Calculus 1</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topnav">
+    <a href="home.html">Home</a>
+    <a href="sell_book.html">Sell a book</a>
+    <a href="recommend_book.html">Recommend a book</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+
+    <div class="topnavLR">
+      <a href="cart.html">Cart</a>
+      <a href="register.html">Register</a>
+      <a href="login.html">Log in</a>
+    </div>
+  </div>
+
+  <header>
+    Book Details
+  </header>
+
+  <div class="content">
+    <main>
+      <h2>Book Information</h2>
+      <img src="imgs/CALC1.jpg" alt="Calculus 1" class="book-image">
+      <table class="book-details-table">
+        <tr>
+          <th>Title:</th>
+          <td>Calculus 1</td>
+        </tr>
+        <tr>
+          <th>Course Name:</th>
+          <td>Introduction to Differentiation</td>
+        </tr>
+        <tr>
+          <th>Course Code:</th>
+          <td>MAT 101</td>
+        </tr>
+       
+      <tr>
+        <th>University:</th>
+        <td>King Saud University</td>
+      </tr>
+      <tr>
+        <th>College:</th>
+        <td>Science</td>
+      </tr>
+      <tr>
+        <th>Section:</th>
+        <td>Math</td>
+      </tr>
+      <tr>
+        <th>Book Condition:</th>
+        <td>Used</td>
+      </tr>
+      
+        <tr>
+          <th>Author:</th>
+          <td>D.Chris</td>
+        </tr>
+        <tr>
+          <th>ISBN:</th>
+          <td>1423257</td>
+        </tr>
+        <tr>
+          <th>Price:</th>
+          <td>SAR 70</td>
+        </tr>
+        <tr>
+          <th>Edition:</th>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>Available Quantity:</th>
+          <td>22</td>
+        </tr>
+   
+     
+      </table>
+      <button class="add-to-cart-button" onclick="addToCart()">Add to Cart</button>
+    </main>
+  </div>
+
+  <footer>My Fit Book Project</footer>
+
+  <script>
+    function addToCart() {
+      const book = {
+        bookId: 11121107,
+        title: "Calculus 1",
+        price: 70,
+        quantity: 1,
+        image: "imgs/CALC1.jpg"
+      };
+
+      let booksInCart = localStorage.getItem('booksInCart');
+      if (booksInCart) {
+        booksInCart = JSON.parse(booksInCart);
+      } else {
+        booksInCart = [];
+      }
+
+      const bookExist = booksInCart.find(b => b.bookId === book.bookId);
+      if (bookExist) {
+        bookExist.quantity += 1;
+      } else {
+        booksInCart.push(book);
+      }
+
+      localStorage.setItem('booksInCart', JSON.stringify(booksInCart));
+      alert('Book added to cart');
+    }
+  </script>
+</body>
+</html>

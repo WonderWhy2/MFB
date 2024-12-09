@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MFB - Home</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topnav">
+    <a  href="home.html">Home</a>
+    <a href="sell_book.html">Sell a book</a>
+    <a href="recommend_book.html">Recommend a book</a>
+    <a href="contact.html">Contact</a>
+    <a href="about.html">About</a>
+
+    <div class="topnavLR">
+      <a href="cart.html">Cart</a>
+    <a href="register.html">Register</a>
+    <a href="login.html">Log in</a>
+    <a href="login.html" onclick="logout()">Logout</a>
+    </div>
+  </div>
+
+  <script>  function logout() {
+    alert('Logout successful!'); 
+    fetch('/logout', { method: 'GET' }); } 
+  </script>
+
+   
+  <header>
+    MFB
+  </header>
+
+    <div class="container">
+    <nav>
+      <ul>
+       <li><a href="home.html">Home</a></li>
+       <li><a href="browse_books.html">Browse Books</a></li>
+       <li><a href="best_sellers.html">Best Sellers</a></li>
+       <li><a href="offers.html">Offers</a></li>
+     </ul>
+    </nav>
+    </div>
+
+
+
+
+  
+ 
+
+  <div class="content">
+    <aside class="filters">
+      <h3>Filters</h3>
+
+      <div>
+        <h4>University</h4>
+        <label><input type="checkbox" class="filter-university" value="King saud university"> King Saud University</label><br>
+        <label><input type="checkbox" class="filter-university" value="Prince Sultan University"> Prince Sultan University</label><br>
+        <label><input type="checkbox" class="filter-university" value="Imam Mohammed Bin Saud University"> Imam Mohammed Bin Saud University</label><br>
+        <label><input type="checkbox" class="filter-university" value="AL Yamamh University"> Al Yamamh University</label><br>
+        <label><input type="checkbox" class="filter-university" value="King Faisal university"> King Faisal University</label><br>
+      </div>
+
+      <div>
+        <h4>College</h4>
+        <label><input type="checkbox" class="filter-college" value="Science"> Science</label><br>
+        <label><input type="checkbox" class="filter-college" value="Engineering"> Engineering</label><br>
+        <label><input type="checkbox" class="filter-college" value="Business Administration"> Business Administration</label><br>
+      </div>
+
+      <div>
+        <h4>Section</h4>
+        <label><input type="checkbox" class="filter-section" value="Physics"> Physics</label><br>
+        <label><input type="checkbox" class="filter-section" value="Math"> Math</label><br>
+        <label><input type="checkbox" class="filter-section" value="Biology"> Biology</label><br>
+        <label><input type="checkbox" class="filter-section" value="Economics"> Economics</label><br>
+        <label><input type="checkbox" class="filter-section" value="Finance"> Finance</label><br>
+        <label><input type="checkbox" class="filter-section" value="Marketing"> Marketing</label><br>
+        <label><input type="checkbox" class="filter-section" value="Mechanical Engineering"> Mechanical Engineering</label><br>
+        <label><input type="checkbox" class="filter-section" value="Electrical Engineering"> Electrical Engineering</label><br>
+        <label><input type="checkbox" class="filter-section" value="Civil Engineering"> Civil Engineering</label><br>
+      </div>
+
+      <button onclick="applyFilters()">Apply Filters</button>
+    </aside>
+
+    <main>
+      <h2>Available Books</h2>
+      <div id="books-list" class="books-container"></div>
+    </main>
+  </div>
+
+  <footer> My Fit Book Project</footer>
+
+  <script>
+    
+
+    document.addEventListener('DOMContentLoaded', fetchBooks);
+
+async function fetchBooks() {
+  const response = await fetch('/books'); // fetch books from the backend
+  const books = await response.json();
+  displayBooks(books);
+}
+
+ 
+function displayBooks(books) {
+  let booksHTML = '';
+
+  books.forEach((book) => {
+    if (book.quantity === 0) {
+      booksHTML += `
+        <div class="book-item">
+          <img src="${book.image}" alt="${book.title}">
+          <h3>${book.title}</h3>
+          <p>Author: ${book.author}</p>
+          <p>Price: SAR${book.price}</p>
+          <p><strong>Out of Stock</strong></p>
+          <button disabled>Out of Stock</button>
+        </div>
+      `;
+    } else {
+      booksHTML += `
+        <div class="book-item">
+          <img src="${book.image}" alt="${book.title}">
+          <h3>${book.title}</h3>
+          <p>Author: ${book.author}</p>
+          <p>University: ${book.university}</p>
+          <p>Section: ${book.section}</p>
+          <p>Price: SAR${book.price}</p>
+           <p>Condition:${book.book_condition}</p>
+          <p>Quantity: ${book.quantity}</p>
+          <button onclick="addToCart(${book.book_id}, '${book.title}', ${book.price}, '${book.image}')">Add to Cart</button>
+        </div>
+      `;
+    }
+  });
+
+  document.getElementById('books-list').innerHTML = booksHTML;
+}
+
+   async function applyFilters() {
+
+  const selectedUniversities = [];
+  document.querySelectorAll('.filter-university:checked').forEach(function (checkbox) {
+    selectedUniversities.push(checkbox.value);
+  });
+
+  const selectedColleges = [];
+  document.querySelectorAll('.filter-college:checked').forEach(function (checkbox) {
+    selectedColleges.push(checkbox.value);
+  });
+
+  const selectedSections = [];
+  document.querySelectorAll('.filter-section:checked').forEach(function (checkbox) {
+    selectedSections.push(checkbox.value);
+  });
+
+  // fetch books
+  const response = await fetch('/books');
+  const books = await response.json(); 
+
+  // filter the books 
+  const filteredBooks = books.filter(book => {
+    const universityMatch =
+      selectedUniversities.length === 0 || selectedUniversities.includes(book.university);
+    const collegeMatch =
+      selectedColleges.length === 0 || selectedColleges.includes(book.college);
+    const sectionMatch =
+      selectedSections.length === 0 || selectedSections.includes(book.section);
+  
+    return universityMatch && collegeMatch && sectionMatch;
+  });
+  
+
+  // Display the filtered books
+  displayBooks(filteredBooks);
+}
+  </script>
+  
+
+
+
+
+
+  <script>
+  
+    function addToCart(bookId, title, price, image) {
+  
+      let booksInCart = localStorage.getItem('booksInCart'); 
+
+      if (booksInCart) {
+        booksInCart = JSON.parse(booksInCart); 
+      } else {
+        booksInCart = []; 
+         }
+    
+
+      const bookexsit = booksInCart.find(book => book.bookId === bookId);
+
+      if (bookexsit) {
+        bookexsit.quantity += 1;
+       } else {
+         booksInCart.push({
+
+          bookId: bookId,
+          title: title,
+          price: price,
+          image: image,
+          quantity: 1,
+
+          });
+        }
+    
+      localStorage.setItem('booksInCart', JSON.stringify(booksInCart));
+    
+      alert('Book added to cart');}
+    
+  
+  </script>
+</body>
+</html>
+
